@@ -1,0 +1,31 @@
+*Causality*
+A vector clock approach is taken to enforce causal consistency. It is insufficient to maintain a single global vector clock, as it does not reflect the causal ordering of individual keys. To solve the previous problem, we instead associate each key with its own vector clock, which is implemented as a dictionary where each key is mapped to a vector clock, along with the tie-breaking data described below (let's call this dictionary key_vc). The causal metadata would then be the keys mapped to the latest associated vector clock that the client has seen from the replicas it made requests to previously.
+
+PUT / DELETE
+When a replica receives a PUT request, it first merges the incoming metadata with its local metadata. After applying the write operation, the replica increments the vector clock counter of its local causal metadata for the write key. It then updates the key_vc entry for the given key by setting its vector clock to the vector clock of the updated causal metadata for the same key, along with adding the tie-breaking data. The local causal metedata is then returned to the client for later use. The same process is applied when the replica receives a delete request.
+
+READ
+When a replica receives a GET request for a particular key, it compares the vector clock of the key from the causal metedata (vc_request) of the request with that from key_vc for the same key (vc_current). The replica would stall until vc_current is causally greater than or equal to vc_request. Note that the replica itself does not actively go out to other replicas for updates if vc_current is not at the required state, but instead other replicas would gossip updates to all the other replicas. While the replica is stalling, it yields the current request and go on handling other requests such as the gossip request. If the replica is not able to get the required state for vc_current after 20 seconds, it responds with a timed out error. The replica also merges its local causal metedata with the request causal metedata to ensure causality in future operations. In the case that the clients sends a GET request for all keys, the replica must stall until its local state for all the keys in the incoming causal metadata is causally after.
+
+This approach allows our replicas to be available while maintaining causal consistency, as writes does not stall, but reads does if causality would be violated.
+
+*Tie-breaking*
+The address of the replica where the operation originated from is used to tiebreak conflicting operations.
+If two vc's are concurrent, the node with a address that is lexicographically greater wins.
+
+
+*Gossiping*
+A gossip mechanism is utilized to establish eventual consistency and replication. Every second, a gossip job is ran which broadcasts a sync request with the state of each of the current node's keys (including deleted ones). The job sends a sync request to every other replicas in the cluster, including the current state of its key-value store, the current key_vc which includes the vector clock and origin address of each key, and also its local causal metedata. A replica who receives this sync requests goes through all the keys in the incoming key_vc, comparing its local key_vc value with the incoming key_vc for the same key. If the replica determines that the incoming key_vc value is causally greater (either through vector clock alone or tiebreaking), it changes the key's value for its own key-value store to that of the incoming. The replica would also update the key_vc value for the key by merging it with the incoming one, and update its local causal metadata to avoid causality violation in the future.
+
+*Down Detection*
+The given approach does not require detecting downed replicas directly. Instead, it makes decisions based on timeouts, such as how the replica would decide that the replicas which holds the update it requires for a causal read is likely unresponsive after 20 seconds.
+
+
+*Structures*
+key_vc: {key: (vector clock, origin address)} - The key mapped to its actual current state represented by its vector clock and origin address.
+causal-metedata: {key: vector clock} - The key mapped to the minimum vector clock that it has to be when read in order to respect causality.
+local causal-metedata: {key: vector clock} - The key mapped to the maximum vector clock it has seen from the previous causal metadatas and its local operations.
+
+
+
+
