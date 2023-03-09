@@ -20,6 +20,8 @@ A gossip mechanism is utilized to establish eventual consistency and replication
 *Down Detection*
 The given approach does not require detecting downed replicas directly. Instead, it makes decisions based on timeouts, such as how the replica would decide that the replicas which holds the update it requires for a causal read is likely unresponsive after 20 seconds.
 
+*Resharding*
+During a resharding operation, each node filters their key-values based on the key's new shard ID. The node would then send the filtered key-values to the corresponding nodes in the shard they belong.
 
 *Structures*
 key_vc: {key: (vector clock, origin address)} - The key mapped to its actual current state represented by its vector clock and origin address.

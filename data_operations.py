@@ -1,4 +1,4 @@
-from flask import Flask, request, Blueprint
+from flask import Flask, request, Blueprint, Response
 from utils import *
 import utils
 import requests
@@ -21,17 +21,19 @@ atexit.register(lambda: scheduler.shutdown())
 
 
 def is_uninitialized():
-    return len(utils.view) == 0
+    return len(utils.nodes) == 0
 
 
 def gossip_job():
     ''' Gossips the current kvs and key_vc state to other nodes '''
+    if is_uninitialized():
+        return
     sync_body = {
         'kvs': utils.kvs,
         'key_vc': utils.key_vc,
         'causal-metadata': utils.cm
     }
-    for addr in utils.view:
+    for addr in utils.shards[utils.current_shard_id]:
         if addr == current_address:
             continue
         try:
@@ -46,11 +48,9 @@ scheduler.add_job(func=gossip_job, trigger="interval", seconds=1)
 scheduler.start()
 
 
-def init_vc():
-    res = {}
-    for addr in utils.view:
-        res[addr] = 0
-    return res
+def key_belongs_to_shard(key):
+    shard_id = key_hash(key) % len(utils.shards)
+    return shard_id == utils.current_shard_id
 
 
 def merge_cm(incoming_cm):
@@ -58,19 +58,21 @@ def merge_cm(incoming_cm):
     for key, vc in incoming_cm.items():
         if key not in utils.cm:
             utils.cm[key] = init_vc()
-        for addr in utils.view:
+        for addr in utils.shards[utils.current_shard_id]:
             utils.cm[key][addr] = max(utils.cm[key][addr], vc[addr])
 
 
-def stall_for_consistency(keys, req_vcs):
+def stall_for_consistency(keys, req_vcs, max_stall=20):
     # Ensure causality for all of the given keys
     seconds_stalled = 0
     for key in keys:
+        if not key_belongs_to_shard(key):
+            continue
         k_vc = req_vcs.get(key, init_vc())
         if key not in utils.key_vc:
             utils.key_vc[key] = (init_vc(), current_address)
         while get_vc_order(utils.key_vc[key][0], k_vc) != GREATER:
-            if seconds_stalled == 20:
+            if seconds_stalled == max_stall:
                 return False
             # Stall while current vc is strictly less than req_vc
             time.sleep(1)
@@ -89,7 +91,7 @@ def put_kvs_data_sync():
     req_key_vc = data.get('key_vc')
     req_cm = data.get('causal-metadata')
     for key, (req_vc, req_addr) in req_key_vc.items():
-        delete = key not in req_kvs # Delete operation if key is not in req_kvs
+        delete = key not in req_kvs  # Delete operation if key is not in req_kvs
         val = req_kvs.get(key, None)
         # Determine order or tie break, then apply update if necessary
         (current_key_vc, current_key_addr) = utils.key_vc.get(
@@ -111,7 +113,7 @@ def put_kvs_data_sync():
             else:
                 utils.kvs[key] = val
         # Update vc to take max of incoming vc or current
-        for addr in utils.view:
+        for addr in utils.shards[utils.current_shard_id]:
             current_key_vc[addr] = max(current_key_vc[addr], req_vc[addr])
         utils.key_vc[key] = deepcopy((current_key_vc, new_addr))
     # Update causal metadata after sync
@@ -120,11 +122,68 @@ def put_kvs_data_sync():
     return {'message': 'OK'}, 200
 
 
+def redirect_to_host(fwd_address, req, timeout_seconds=1):
+    # Host URL to forward the requests to
+    fwd_host = f'http://{fwd_address}/'
+    fwd_headers = {k: v for k, v in req.headers}
+    # Update the host header
+    fwd_headers['Host'] = fwd_address
+    print(f'FORWARDING TO: {req.url.replace(req.host_url, fwd_host)}')
+    fwd_json = req.get_json()
+    fwd_json['proxied'] = True  # For GET requests
+    res = requests.request(
+        method=req.method,
+        url=req.url.replace(req.host_url, fwd_host),
+        headers=fwd_headers,
+        json=fwd_json,
+        cookies=req.cookies,
+        allow_redirects=False,
+        timeout=timeout_seconds
+    )
+    # Exclude all "hop-by-hop headers"
+    excluded_headers = ['content-encoding',
+                        'content-length', 'transfer-encoding', 'connection']
+    headers = [
+        (k, v) for k, v in res.raw.headers.items()
+        if k.lower() not in excluded_headers
+    ]
+
+    response = Response(res.content, res.status_code, headers)
+    return response
+
+
 @data_ops.route(KVS_DATA_PATH + '/<key>', methods=['PUT'])
 def put_kvs_data_key(key):
     print(f'PUT /kvs/data/{key}')
     if is_uninitialized():
         return {"error": "uninitialized"}, 418
+
+    shard_id = key_hash(key) % len(utils.shards)  # Shard ID of given key
+    print(f'key: {key}, shard_id: {shard_id}')
+    if shard_id != utils.current_shard_id:
+        # 20 seconds to attempt all shard nodes
+        timeout_seconds = 20.0 / len(utils.shards)
+        # Forward to a node in the associated shard
+        for node in utils.shards[shard_id]:
+            try:
+                resp = redirect_to_host(
+                    node, request, timeout_seconds=timeout_seconds)
+                return resp
+            except Exception as e:
+                print(e)
+                # Request to upstream timed out or can't connect
+                pass
+        # Attempted all nodes in shard after 20 seconds
+        return {
+            "error": "upstream down",
+            "upstream": {
+                "shard_id": str(shard_id),
+                "nodes": utils.shards[shard_id]
+            }
+        }, 503
+
+    # Key belongs to current shard, handle the request
+    print(f'key: {key}, shard_id: {utils.current_shard_id}')
     data = request.get_json()
     causal_metadata = data.get('causal-metadata')
     if causal_metadata == None:
@@ -155,12 +214,42 @@ def get_kvs_data_key(key):
     print(f'GET /kvs/data/{key}')
     if is_uninitialized():
         return {"error": "uninitialized"}, 418
+
+    shard_id = key_hash(key) % len(utils.shards)  # Shard ID of given key
+    if shard_id != utils.current_shard_id:
+        start = time.time()
+        stalled_deps = False
+        # Forward to a node in the associated shard
+        while time.time() - start < 20:
+            for node in utils.shards[shard_id]:
+                try:
+                    resp = redirect_to_host(
+                        node, request, timeout_seconds=1)
+                    if resp.status_code == 200:
+                        return resp
+                    elif resp.status_code == 500:  # Waiting for deps
+                        stalled_deps = True
+                except Exception as _:
+                    pass
+        if stalled_deps:
+            return {"error": "timed out while waiting for depended updates"}, 500
+        # Attempted all nodes in shard after 20 seconds
+        return {
+            "error": "upstream down",
+            "upstream": {
+                "shard_id": str(shard_id),
+                "nodes": utils.shards[shard_id]
+            }
+        }, 503
+
     data = request.get_json()
     causal_metadata = data.get('causal-metadata')
+    proxied = data.get('proxied')
     if causal_metadata == None:
         causal_metadata = {}
     # Stall until the current vc for the given key is causally consistent with cm
-    stall_success = stall_for_consistency([key], causal_metadata)
+    stall_success = stall_for_consistency(
+        [key], causal_metadata, max_stall=(0 if proxied else 20))
     merge_cm(causal_metadata)
     if stall_success == False:
         return {"error": "timed out while waiting for depended updates"}, 500
@@ -178,6 +267,25 @@ def delete_kvs_data_key(key):
     print(f'DELETE /kvs/data/{key}')
     if is_uninitialized():
         return {"error": "uninitialized"}, 418
+
+    shard_id = key_hash(key) % len(utils.shards)
+    if shard_id != utils.current_shard_id:
+        timeout_seconds = 20.0 / len(utils.shards)
+        for node in utils.shards[shard_id]:
+            try:
+                resp = redirect_to_host(
+                    node, request, timeout_seconds=timeout_seconds)
+                return resp
+            except Exception as _:
+                pass
+        return {
+            "error": "upstream down",
+            "upstream": {
+                "shard_id": str(shard_id),
+                "nodes": utils.shards[shard_id]
+            }
+        }, 503
+
     data = request.get_json()
     causal_metadata = data.get('causal-metadata')
     if causal_metadata == None:
@@ -204,18 +312,21 @@ def get_kvs_data():
     print('GET /kvs/data')
     if is_uninitialized():
         return {"error": "uninitialized"}, 418
+
     data = request.get_json()
     causal_metadata = data.get('causal-metadata')
     if causal_metadata == None:
         causal_metadata = {}
-    keys = list(causal_metadata.keys())  # All keys in the incoming causal metadata
+    # All keys in the incoming causal metadata
+    keys = list(causal_metadata.keys())
     # Wait for all dependencies to be satisfied
     stall_success = stall_for_consistency(keys, causal_metadata)
     merge_cm(causal_metadata)
     if stall_success == False:
         return {"error": "timed out while waiting for depended updates"}, 500
-    ret_keys = list(utils.kvs.keys()) # Current keys in kvs
+    ret_keys = list(utils.kvs.keys())  # Current keys in kvs
     ret_body = {
+        'shard_id': utils.current_shard_id,
         'causal-metadata': utils.cm,
         'keys': ret_keys,
         'count': len(ret_keys)
