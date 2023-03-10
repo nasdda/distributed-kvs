@@ -69,7 +69,7 @@ def key_hash(key):
     To ensure that the hash value is the same across nodes.
     Reference: https://docs.python.org/3.5/library/hashlib.html?highlight=hashlib
     '''
-    seed = b'cse-138-assignment4'  # Same seed every time
+    seed = b'cse)138&assignment$4'  # Same seed every time
     hash_func = hashlib.sha256(seed)
     hash_func.update(key.encode('utf-8'))
     digest_bytes = hash_func.digest()
