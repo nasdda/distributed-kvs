@@ -219,20 +219,22 @@ def get_kvs_data_key(key):
     if shard_id != utils.current_shard_id:
         start = time.time()
         stalled_deps = False
+        stalled_resp = {}
         # Forward to a node in the associated shard
         while time.time() - start < 20:
             for node in utils.shards[shard_id]:
                 try:
                     resp = redirect_to_host(
                         node, request, timeout_seconds=1)
-                    if resp.status_code == 200:
-                        return resp
-                    elif resp.status_code == 500:  # Waiting for deps
+                    if resp.status_code == 500:  # Waiting for deps
                         stalled_deps = True
+                        stalled_resp = deepcopy(resp.get_json())
+                    else:
+                        return resp
                 except Exception as _:
                     pass
         if stalled_deps:
-            return {"error": "timed out while waiting for depended updates"}, 500
+            return stalled_resp, 500
         # Attempted all nodes in shard after 20 seconds
         return {
             "error": "upstream down",
