@@ -84,7 +84,7 @@ def put_kvs_admin_view():
         url = format_url(addr, ADMIN_VIEW_PATH)
         print(f"Sending PATCH request to {url}")
         try:
-            requests.patch(url, json=patch_body, timeout=1)
+            requests.patch(url, json=patch_body)
         except Exception as _:
             pass
     # Redistribute keys

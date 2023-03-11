@@ -1,33 +1,40 @@
+*Changes: Causality*
+The vector clock now only keeps a counter for the nodes that belong to the same shard as the current node. This would in turn mean that the causal metadata would have keys-vc pairs that do not belong to the same shard as the request key, but this is fine as long as we only compare counts for nodes of the same shard when stalling.
 *Causality*
 A vector clock approach is taken to enforce causal consistency. It is insufficient to maintain a single global vector clock, as it does not reflect the causal ordering of individual keys. To solve the previous problem, we instead associate each key with its own vector clock, which is implemented as a dictionary where each key is mapped to a vector clock, along with the tie-breaking data described below (let's call this dictionary key_vc). The causal metadata would then be the keys mapped to the latest associated vector clock that the client has seen from the replicas it made requests to previously.
 
+*Changes: PUT / DELETE*
+The node now first determine if the shard ID for the given key is the same as its own. If not, it forwards the request to one of the nodes in the correct shard. If it handles the key, then the nodes performs the previous PUT / DELETE logic with the updated vector clock logic described previously.
 PUT / DELETE
 When a replica receives a PUT request, it first merges the incoming metadata with its local metadata. After applying the write operation, the replica increments the vector clock counter of its local causal metadata for the write key. It then updates the key_vc entry for the given key by setting its vector clock to the vector clock of the updated causal metadata for the same key, along with adding the tie-breaking data. The local causal metedata is then returned to the client for later use. The same process is applied when the replica receives a delete request.
 
+*Changes: READ*
+When proxying requests to other nodes, the proxying server adds on a proxied flag to the request data to let the receiving server know that the request was proxied. Knowing that a GET request was proxied, the server does not stall for causality, but instead immediately returns 500 if it cannot causally satisfy the request. The proxy server would then be able to immediately attempt other nodes in the shard. If after 20 seconds, it was not able to satisfy the request, it checks if it received a stalled response from any of its attempts and returns that instead. If none of the attempts were stalled, but instead cannot connect, the proxy server notifies the client that the upstream is down. The server does not need to confirm the shard ID for GET operations on /kvs/data, as no specific key is being targeted.
 READ
 When a replica receives a GET request for a particular key, it compares the vector clock of the key from the causal metedata (vc_request) of the request with that from key_vc for the same key (vc_current). The replica would stall until vc_current is causally greater than or equal to vc_request. Note that the replica itself does not actively go out to other replicas for updates if vc_current is not at the required state, but instead other replicas would gossip updates to all the other replicas. While the replica is stalling, it yields the current request and go on handling other requests such as the gossip request. If the replica is not able to get the required state for vc_current after 20 seconds, it responds with a timed out error. The replica also merges its local causal metedata with the request causal metedata to ensure causality in future operations. In the case that the clients sends a GET request for all keys, the replica must stall until its local state for all the keys in the incoming causal metadata is causally after.
 
-This approach allows our replicas to be available while maintaining causal consistency, as writes does not stall, but reads does if causality would be violated.
+This approach allows our replicas to be available while maintaining causal consistency within the same shard, as writes does not stall, but reads does if causality would be violated. Additionally, with the new changes, the total load of keys would be roughly equally distributed along all shards, assuming random keys. 
 
 *Tie-breaking*
 The address of the replica where the operation originated from is used to tiebreak conflicting operations.
 If two vc's are concurrent, the node with a address that is lexicographically greater wins.
 
-
+*Changes: Gossiping*
+Gossiping now only happens among the nodes within the same shard.
 *Gossiping*
 A gossip mechanism is utilized to establish eventual consistency and replication. Every second, a gossip job is ran which broadcasts a sync request with the state of each of the current node's keys (including deleted ones). The job sends a sync request to every other replicas in the cluster, including the current state of its key-value store, the current key_vc which includes the vector clock and origin address of each key, and also its local causal metedata. A replica who receives this sync requests goes through all the keys in the incoming key_vc, comparing its local key_vc value with the incoming key_vc for the same key. If the replica determines that the incoming key_vc value is causally greater (either through vector clock alone or tiebreaking), it changes the key's value for its own key-value store to that of the incoming. The replica would also update the key_vc value for the key by merging it with the incoming one, and update its local causal metadata to avoid causality violation in the future.
 
 *Down Detection*
 The given approach does not require detecting downed replicas directly. Instead, it makes decisions based on timeouts, such as how the replica would decide that the replicas which holds the update it requires for a causal read is likely unresponsive after 20 seconds.
 
-*Resharding*
-During a resharding operation, each node filters their key-values based on the key's new shard ID. The node would then send the filtered key-values to the corresponding nodes in the shard they belong.
+*Sharding*
+We assign nodes to a shard in a pigeon-hole fashion, where we go through the shards, assign an unassigned node to the current shard, and move on to the next shard, looping around if necessary. We repeat this until there are no more nodes to assign. To determine the shard that a key belongs to, the key is hashed and modulo with the number of shards. The hash function is seeded with a value that is the same across all replicas to ensure that the hash value for the same key is consistent. When a node receives a request for a particular key, it determines the shard ID for the given key, and handles the request if it is assigned to the specific shard. If not, the node would proxy the request to the nodes of the shard until a satisfactory response is received. During a resharding operation, each node filters their key-values based on the key's new shard ID. The node would then send the filtered key-values to the corresponding nodes in the shard they belong.
 
 *Structures*
 key_vc: {key: (vector clock, origin address)} - The key mapped to its actual current state represented by its vector clock and origin address.
 causal-metedata: {key: vector clock} - The key mapped to the minimum vector clock that it has to be when read in order to respect causality.
-local causal-metedata: {key: vector clock} - The key mapped to the maximum vector clock it has seen from the previous causal metadatas and its local operations.
-
+local causal-metadata: {key: vector clock} - The key mapped to the maximum vector clock it has seen from the previous causal metadatas and its local operations.
+shards: shards[shard_id] = [node address] - An array of arrays where the array at index shard_id is the addresses of nodes that belongs to the shard for the specific shard_id.
 
 
 

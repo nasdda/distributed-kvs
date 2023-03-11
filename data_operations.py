@@ -272,7 +272,7 @@ def delete_kvs_data_key(key):
 
     shard_id = key_hash(key) % len(utils.shards)
     if shard_id != utils.current_shard_id:
-        timeout_seconds = 20.0 / len(utils.shards)
+        timeout_seconds = max(20.0 / len(utils.shards), 0.1)
         for node in utils.shards[shard_id]:
             try:
                 resp = redirect_to_host(
