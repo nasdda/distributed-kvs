@@ -31,7 +31,10 @@ def gossip_job():
     sync_body = {
         'kvs': utils.kvs,
         'key_vc': utils.key_vc,
-        'causal-metadata': utils.cm
+        'causal-metadata': {
+            'cm': utils.cm,
+            'ver': utils.view_version
+        }
     }
     for addr in utils.shards[utils.current_shard_id]:
         if addr == current_address:
@@ -56,9 +59,10 @@ def key_belongs_to_shard(key):
 def merge_cm(incoming_cm):
     ''' Merges the incoming causal-metadata with the local '''
     for key, vc in incoming_cm.items():
+        shard_id = key_hash(key) % len(utils.shards)
         if key not in utils.cm:
-            utils.cm[key] = init_vc()
-        for addr in utils.shards[utils.current_shard_id]:
+            utils.cm[key] = init_vc(keys=utils.shards[shard_id])
+        for addr in utils.shards[shard_id]:
             utils.cm[key][addr] = max(utils.cm[key][addr], vc[addr])
 
 
@@ -89,7 +93,10 @@ def put_kvs_data_sync():
     data = request.get_json()
     req_kvs = data.get('kvs')
     req_key_vc = data.get('key_vc')
-    req_cm = data.get('causal-metadata')
+    causal_metadata = data.get('causal-metadata')
+    if causal_metadata['ver'] < utils.view_version:
+        causal_metadata['cm'].clear()
+    req_cm = causal_metadata['cm']
     for key, (req_vc, req_addr) in req_key_vc.items():
         delete = key not in req_kvs  # Delete operation if key is not in req_kvs
         val = req_kvs.get(key, None)
@@ -185,10 +192,16 @@ def put_kvs_data_key(key):
     # Key belongs to current shard, handle the request
     print(f'key: {key}, shard_id: {utils.current_shard_id}')
     data = request.get_json()
+
     causal_metadata = data.get('causal-metadata')
-    if causal_metadata == None:
-        causal_metadata = {}
+    if not causal_metadata:
+        causal_metadata = {'cm': {}, 'ver': utils.view_version}
+    if causal_metadata['ver'] < utils.view_version:
+        causal_metadata['cm'].clear()
+    causal_metadata = causal_metadata['cm']
+
     merge_cm(causal_metadata)
+
     val = data.get('val')
     if val == None:  # Does not contain required information
         return {"error": "bad request"}, 400
@@ -204,7 +217,10 @@ def put_kvs_data_key(key):
     # and the new vector clock for the key is now 1 count ahead for the current node
     utils.key_vc[key] = deepcopy((utils.cm[key], current_address))
     ret_body = {
-        'causal-metadata': utils.cm
+        'causal-metadata': {
+            'cm': utils.cm,
+            'ver': utils.view_version
+        }
     }
     return ret_body, code
 
@@ -245,10 +261,16 @@ def get_kvs_data_key(key):
         }, 503
 
     data = request.get_json()
+
     causal_metadata = data.get('causal-metadata')
+    if not causal_metadata:
+        causal_metadata = {'cm': {}, 'ver': utils.view_version}
+    if causal_metadata['ver'] < utils.view_version:
+        causal_metadata['cm'].clear()
+    causal_metadata = causal_metadata['cm']
+
     proxied = data.get('proxied')
-    if causal_metadata == None:
-        causal_metadata = {}
+
     # Stall until the current vc for the given key is causally consistent with cm
     stall_success = stall_for_consistency(
         [key], causal_metadata, max_stall=(0 if proxied else 20))
@@ -256,7 +278,10 @@ def get_kvs_data_key(key):
     if stall_success == False:
         return {"error": "timed out while waiting for depended updates"}, 500
     ret_body = {
-        'causal-metadata': utils.cm
+        'causal-metadata': {
+            'cm': utils.cm,
+            'ver': utils.view_version
+        }
     }
     if key not in utils.kvs:
         return ret_body, 404
@@ -289,12 +314,20 @@ def delete_kvs_data_key(key):
         }, 503
 
     data = request.get_json()
+
     causal_metadata = data.get('causal-metadata')
-    if causal_metadata == None:
-        causal_metadata = {}
+    if not causal_metadata:
+        causal_metadata = {'cm': {}, 'ver': utils.view_version}
+    if causal_metadata['ver'] < utils.view_version:
+        causal_metadata['cm'].clear()
+    causal_metadata = causal_metadata['cm']
+    
     merge_cm(causal_metadata)
     ret_body = {
-        'causal-metadata': utils.cm
+        'causal-metadata': {
+            'cm': utils.cm,
+            'ver': utils.view_version
+        }
     }
     if key not in utils.kvs:
         return ret_body, 404
@@ -304,7 +337,10 @@ def delete_kvs_data_key(key):
     utils.cm[key][current_address] += 1
     utils.key_vc[key] = deepcopy((utils.cm[key], current_address))
     ret_body = {
-        'causal-metadata': utils.cm
+        'causal-metadata': {
+            'cm': utils.cm,
+            'ver': utils.view_version
+        }
     }
     return ret_body, 200
 
@@ -317,8 +353,11 @@ def get_kvs_data():
 
     data = request.get_json()
     causal_metadata = data.get('causal-metadata')
-    if causal_metadata == None:
-        causal_metadata = {}
+    if not causal_metadata:
+        causal_metadata = {'cm': {}, 'ver': utils.view_version}
+    if causal_metadata['ver'] < utils.view_version:
+        causal_metadata['cm'].clear()
+    causal_metadata = causal_metadata['cm']
     # All keys in the incoming causal metadata
     keys = list(causal_metadata.keys())
     # Wait for all dependencies to be satisfied
@@ -329,7 +368,10 @@ def get_kvs_data():
     ret_keys = list(utils.kvs.keys())  # Current keys in kvs
     ret_body = {
         'shard_id': utils.current_shard_id,
-        'causal-metadata': utils.cm,
+        'causal-metadata': {
+            'cm': utils.cm,
+            'ver': utils.view_version
+        },
         'keys': ret_keys,
         'count': len(ret_keys)
     }

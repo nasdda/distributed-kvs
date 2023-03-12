@@ -73,10 +73,14 @@ def put_kvs_admin_view():
     utils.nodes = deepcopy(new_nodes)
     print(f'New nodes: {utils.nodes}')
 
+    # Update view version
+    utils.view_version += 1
+
     # Notify other nodes in the new view
     patch_body = {
         'nodes': utils.nodes,
-        'shards': utils.shards
+        'shards': utils.shards,
+        'ver': utils.view_version
     }
     for addr in new_nodes:
         if addr == current_address:
@@ -101,6 +105,7 @@ def patch_kvs_admin_view():
     # Get copy of the vector clock and kvs from existing nodes
     nodes_copy = data.get('nodes')
     shards_copy = data.get('shards')
+    new_ver = data.get('ver')
     if nodes_copy == None or shards_copy == None:
         return {"error": "bad request"}, 400
     utils.nodes.clear()
@@ -110,6 +115,7 @@ def patch_kvs_admin_view():
             utils.current_shard_id = shard_id
     utils.nodes = deepcopy(nodes_copy)
     utils.shards = deepcopy(shards_copy)
+    utils.view_version = new_ver
 
     reshard_keys()
 

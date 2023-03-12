@@ -23,6 +23,8 @@ def init():
     shards = []  # shards[shard_id] = [addr]
     global current_shard_id
     current_shard_id = -1
+    global view_version
+    view_version = 0 # Used to determine if causal metadata is outdated
 
 
 # Paths
@@ -57,10 +59,14 @@ def get_vc_order(vc_a, vc_b):
     return GREATER
 
 
-def init_vc():
+def init_vc(keys=None):
     res = {}
-    for addr in shards[current_shard_id]:
-        res[addr] = 0
+    if keys:
+        for addr in keys:
+            res[addr] = 0
+    else:
+        for addr in shards[current_shard_id]:
+            res[addr] = 0
     return res
 
 
