@@ -169,7 +169,7 @@ def put_kvs_data_key(key):
     print(f'key: {key}, shard_id: {shard_id}')
     if shard_id != utils.current_shard_id:
         # 20 seconds to attempt all shard nodes
-        timeout_seconds = max(20.0 / len(utils.shards), 0.1)
+        timeout_seconds = max(20.0 / len(utils.shards[shard_id]), 0.1)
         # Forward to a node in the associated shard
         for node in utils.shards[shard_id]:
             try:
@@ -297,7 +297,7 @@ def delete_kvs_data_key(key):
 
     shard_id = key_hash(key) % len(utils.shards)
     if shard_id != utils.current_shard_id:
-        timeout_seconds = max(20.0 / len(utils.shards), 0.1)
+        timeout_seconds = max(20.0 / len(utils.shards[shard_id]), 0.1)
         for node in utils.shards[shard_id]:
             try:
                 resp = redirect_to_host(
