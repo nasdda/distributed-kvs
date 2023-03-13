@@ -105,8 +105,8 @@ def put_kvs_data_sync():
             key, (init_vc(), current_address))
         # Current vc v.s. request vc
         order = get_vc_order(current_key_vc, req_vc)
-        if order != GREATER:
-            print(f'key:{key}, val:{val}, order:{order}')
+        # if order != GREATER:
+        #     print(f'key:{key}, val:{val}, order:{order}')
         # Tie break using address.
         tiebreak_cond = order == CONCURRENT and current_key_addr < req_addr
         new_addr = current_key_addr
@@ -190,7 +190,6 @@ def put_kvs_data_key(key):
         }, 503
 
     # Key belongs to current shard, handle the request
-    print(f'key: {key}, shard_id: {utils.current_shard_id}')
     data = request.get_json()
 
     causal_metadata = data.get('causal-metadata')
