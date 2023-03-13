@@ -169,7 +169,7 @@ def put_kvs_data_key(key):
     print(f'key: {key}, shard_id: {shard_id}')
     if shard_id != utils.current_shard_id:
         # 20 seconds to attempt all shard nodes
-        timeout_seconds = 20.0 / len(utils.shards)
+        timeout_seconds = max(20.0 / len(utils.shards), 0.1)
         # Forward to a node in the associated shard
         for node in utils.shards[shard_id]:
             try:
