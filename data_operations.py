@@ -357,7 +357,7 @@ def get_kvs_data():
         return {"error": "timed out while waiting for depended updates"}, 500
     ret_keys = list(utils.kvs.keys())  # Current keys in kvs
     ret_body = {
-        'shard_id': utils.current_shard_id,
+        'shard_id': str(utils.current_shard_id),
         'causal-metadata': {
             'cm': utils.cm,
             'ver': utils.view_version

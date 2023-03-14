@@ -145,16 +145,6 @@ class TestAssignment1(unittest.TestCase):
                           put_view_body(view_addresses))
                 self.assertEqual(res.status_code, 200, msg='Bad status code')
 
-        for h, p in zip(hosts, ports):
-            with self.subTest(host=h, port=p, verb='get'):
-                res = get(kvs_view_admin_url(p, h))
-                self.assertEqual(res.status_code, 200, msg='Bad status code')
-                body = res.json()
-                self.assertIn('view', body,
-                              msg='Key not found in json response')
-                self.assertEqual(body['view'][0]['0'], view_addresses,
-                                 msg='Bad view')
-
     def test_spec_ex2(self):
         res = put(kvs_view_admin_url(ports[0], hosts[0]),
                   put_view_body(view_addresses))

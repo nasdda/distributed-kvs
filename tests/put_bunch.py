@@ -4,7 +4,7 @@ import string
 import random
 
 
-for _ in range(4000):
+for _ in range(7000):
     port = random.randint(8080, 8084)
     N = random.randint(2, 10)
     key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=N))

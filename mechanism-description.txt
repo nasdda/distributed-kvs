@@ -32,8 +32,8 @@ We assign nodes to a shard in a pigeon-hole fashion, where we go through the sha
 
 *Structures*
 key_vc: {key: (vector clock, origin address)} - The key mapped to its actual current state represented by its vector clock and origin address.
-causal-metadata: {key: vector clock} - The key mapped to the minimum vector clock that it has to be when read in order to respect causality.
-local causal-metadata: {key: vector clock} - The key mapped to the maximum vector clock it has seen from the previous causal metadatas and its local operations.
+causal-metadata: {cm: {key: vector clock}, ver: view version} - The key mapped to the minimum vector clock that it has to be when read in order to respect causality. Also the version of the view when the cm was set.
+local causal-metadata: {cm: {key: vector clock}, ver: view version} - The key mapped to the maximum vector clock it has seen from the previous causal metadatas and its local operations. Also the version of the view when the cm was set.
 shards: shards[shard_id] = [node address] - An array of arrays where the array at index shard_id is the addresses of nodes that belongs to the shard for the specific shard_id.
 
 

@@ -127,7 +127,10 @@ def get_kvs_admin_view():
     print('GET /kvs/admin/view')
     view = []
     for shard_id in range(len(utils.shards)):
-        view.append({str(shard_id): utils.shards[shard_id]})
+        view.append({
+            'shard_id': str(shard_id),
+            'nodes': utils.shards[shard_id]
+        })
     ret_body = {
         'view': view
     }

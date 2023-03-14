@@ -17,7 +17,8 @@ def get_counts(shards):
     print(f'total: {tot}')
 
 
-for shards in range(1, 6):
+stall = 5
+for shards in range(5, 0, -1):
     print(f'view change, Shards: {shards}')
     body = {
         "num_shards": shards,
@@ -25,4 +26,6 @@ for shards in range(1, 6):
     }
     resp = requests.put('http://localhost:8080/kvs/admin/view', json=body)
     get_counts(shards)
-    time.sleep(2)
+    if stall > 0:
+        time.sleep(3)
+    stall -= 1
