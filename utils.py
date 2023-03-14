@@ -3,6 +3,7 @@ import traceback
 import os
 import hashlib
 
+
 current_address = os.getenv('ADDRESS')
 
 # Global variables
@@ -24,7 +25,7 @@ def init():
     global current_shard_id
     current_shard_id = -1
     global view_version
-    view_version = 0 # Used to determine if causal metadata is outdated
+    view_version = 0  # Used to determine if causal metadata is outdated
 
 
 # Paths
@@ -47,6 +48,8 @@ def get_vc_order(vc_a, vc_b):
     ''' Returns how vc_a compares to vc_b '''
     smaller = greater = False
     for addr in shards[current_shard_id]:
+        if addr not in vc_a or addr not in vc_b:
+            continue
         if vc_a[addr] > vc_b[addr]:
             greater = True
         if vc_a[addr] < vc_b[addr]:
