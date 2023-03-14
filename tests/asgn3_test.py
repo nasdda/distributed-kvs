@@ -128,15 +128,15 @@ class TestAssignment1(unittest.TestCase):
                 self.assertEqual(body['error'], 'uninitialized',
                                  msg='Bad error message')
 
-    # def test_uninitialized_get_view(self):
-    #     for h, p in zip(hosts, ports):
-    #         with self.subTest(host=h, port=p):
-    #             res = get(kvs_view_admin_url(p, h))
-    #             self.assertEqual(res.status_code, 200, msg='Bad status code')
-    #             body = res.json()
-    #             self.assertIn('view', body,
-    #                           msg='Key not found in json response')
-    #             self.assertEqual(body['view'], [], msg='Bad view')
+    def test_uninitialized_get_view(self):
+        for h, p in zip(hosts, ports):
+            with self.subTest(host=h, port=p):
+                res = get(kvs_view_admin_url(p, h))
+                self.assertEqual(res.status_code, 200, msg='Bad status code')
+                body = res.json()
+                self.assertIn('view', body,
+                              msg='Key not found in json response')
+                self.assertEqual(body['view'], [], msg='Bad view')
 
     def test_put_get_view(self):
         for h, p in zip(hosts, ports):
@@ -144,6 +144,27 @@ class TestAssignment1(unittest.TestCase):
                 res = put(kvs_view_admin_url(p, h),
                           put_view_body(view_addresses))
                 self.assertEqual(res.status_code, 200, msg='Bad status code')
+
+        for h, p in zip(hosts, ports):
+            with self.subTest(host=h, port=p, verb='get'):
+                res = get(kvs_view_admin_url(p, h))
+                self.assertEqual(res.status_code, 200, msg='Bad status code')
+                body = res.json()
+                self.assertIn('view', body,
+                              msg='Key not found in json response')
+                
+                # The view should look like this:
+                # [{'shard_id': '1', 'nodes': ["10.10.0.2:8080", "10.10.0.3:8080", "10.10.0.4:8080"]}]
+                view = body['view']
+                self.assertEqual(len(view), 1, msg='Bad view')
+                self.assertIn('shard_id', view[0],
+                              msg='shard_id not in the view')
+                self.assertIn('nodes', view[0],
+                              msg='nodes not in the view')
+                self.assertEqual(len(view[0]['nodes']), 3,
+                                    msg='Bad number of nodes')
+                self.assertEqual(set(view[0]['nodes']), set(view_addresses),
+                                 msg='Bad nodes')
 
     def test_spec_ex2(self):
         res = put(kvs_view_admin_url(ports[0], hosts[0]),
