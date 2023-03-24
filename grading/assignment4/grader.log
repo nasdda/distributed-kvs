@@ -1,0 +1,359 @@
+time="2023-03-23T23:27:26Z" level=info msg="multiple tests are executed with different weights." group=xyan87
+time="2023-03-23T23:27:26Z" level=info msg="when a test logs an Error it fail-stops, but when a test logs a Warning the test continues (but you don't get the points for the part where the warning was logged." group=xyan87
+time="2023-03-23T23:27:26Z" level=info msg="all data operations were done with a time-out of >=20 seconds; and \"context deadline exceeded\" means longer waits." group=xyan87
+time="2023-03-23T23:27:26Z" level=info msg="all tests that expect a non-500 status code were done after waiting for the eventual consistency period, or the partition that receives the request has the entire causal history of the request." group=xyan87
+time="2023-03-23T23:27:26Z" level=info msg="after each view change or network heal, your system had >=10 seconds to ensure consistency." group=xyan87
+time="2023-03-23T23:27:26Z" level=info msg="running a total of 14 tests" group=xyan87
+time="2023-03-23T23:27:26Z" level=info msg="starting test 1: (basicKV test with 4 nodes and 1 shard(s) (weight=2)" group=xyan87
+time="2023-03-23T23:27:26Z" level=info msg="starting test. Steps: 1. create a cluster (launch processes; wait 10s; PUT view); 2. get the view from all nodes and expect consistency; 3. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 4. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 5. do reads on writes of step 4 (from all nodes, all with reused CM (frm previous access or the end of step 4)) and expect latest values; 6. wait for eventual consistency (10s); 7. do reads on writes of step 3 (from all nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking); 8. get key list and expect total to be 2N. Steps 1-5 and 7-8 each have 10 points for a total of 70." group=xyan87 test=basicKeyVal viewConfig="NumNodes: 4, NumShards: 1"
+time="2023-03-23T23:27:26Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:36Z" level=info msg="putting view to the nodes" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:36Z" level=info msg="score +10 - put view successful" group=xyan87 score=10 test=basicKeyVal
+time="2023-03-23T23:27:36Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:46Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:46Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=basicKeyVal
+time="2023-03-23T23:27:46Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:46Z" level=info msg="score +10 - put independent key-value pairs successful" group=xyan87 score=30 test=basicKeyVal
+time="2023-03-23T23:27:46Z" level=info msg="putting dependent key-value pairs (reusing CM) to all nodes, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:46Z" level=info msg="score +10 - put dependent key-value pairs successful" group=xyan87 score=40 test=basicKeyVal
+time="2023-03-23T23:27:46Z" level=info msg="getting dependent key-value pairs (reusing CM) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:47Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=50 test=basicKeyVal
+time="2023-03-23T23:27:47Z" level=info msg="sleeping for 11s (to let nodes become eventually consistent)" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:58Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:58Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=60 test=basicKeyVal
+time="2023-03-23T23:27:58Z" level=info msg="getting key list from all nodes and expecting 2N nodes in total" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:27:58Z" level=info msg="score +10 - get key lists successful" group=xyan87 score=70 test=basicKeyVal
+time="2023-03-23T23:28:18Z" level=info msg="test completed." finalScore=70 group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:18Z" level=info msg="finished test 1 with score 70/70" group=xyan87
+time="2023-03-23T23:28:18Z" level=info msg="starting test 2: (basicKV test with 4 nodes and 2 shard(s) (weight=2)" group=xyan87
+time="2023-03-23T23:28:18Z" level=info msg="starting test. Steps: 1. create a cluster (launch processes; wait 10s; PUT view); 2. get the view from all nodes and expect consistency; 3. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 4. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 5. do reads on writes of step 4 (from all nodes, all with reused CM (frm previous access or the end of step 4)) and expect latest values; 6. wait for eventual consistency (10s); 7. do reads on writes of step 3 (from all nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking); 8. get key list and expect total to be 2N. Steps 1-5 and 7-8 each have 10 points for a total of 70." group=xyan87 test=basicKeyVal viewConfig="NumNodes: 4, NumShards: 2"
+time="2023-03-23T23:28:30Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:40Z" level=info msg="putting view to the nodes" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:40Z" level=info msg="score +10 - put view successful" group=xyan87 score=10 test=basicKeyVal
+time="2023-03-23T23:28:40Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="score +10 - put independent key-value pairs successful" group=xyan87 score=30 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="putting dependent key-value pairs (reusing CM) to all nodes, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="score +10 - put dependent key-value pairs successful" group=xyan87 score=40 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="getting dependent key-value pairs (reusing CM) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=50 test=basicKeyVal
+time="2023-03-23T23:28:50Z" level=info msg="sleeping for 11s (to let nodes become eventually consistent)" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:29:01Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:29:01Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=60 test=basicKeyVal
+time="2023-03-23T23:29:01Z" level=info msg="getting key list from all nodes and expecting 2N nodes in total" group=xyan87 test=basicKeyVal
+time="2023-03-23T23:29:01Z" level=info msg="score +10 - get key lists successful" group=xyan87 score=70 test=basicKeyVal
+time="2023-03-23T23:29:21Z" level=info msg="test completed." finalScore=70 group=xyan87 test=basicKeyVal
+time="2023-03-23T23:29:21Z" level=info msg="finished test 2 with score 70/70" group=xyan87
+time="2023-03-23T23:29:21Z" level=info msg="starting test 3: availability test with 6 nodes and 2 shards (weight=4)" group=xyan87
+time="2023-03-23T23:29:21Z" level=info msg="starting test. Steps: 1. create a cluster (launch processes; wait 10s; PUT view); 2. get the view from all nodes and expect consistency; 3. partition the nodes so that each partition contains 1+ node from each shard; 4. do non-causally-dependent writes (all with CM={}) sprayed across all partitions (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all partitions (keys [N+1, 2N]); 6. do reads on writes of step 5 (from all partitions, all with reused CM (frm previous access or the end of step 5)) and expect latest values or stall-fails; 7. heal the network and wait for eventual consistency (10s); 8. do reads on writes of step 4 and 5 (from all nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 4-6 each have 10 points and step 8 has 20 points for a total of 50." group=xyan87 test=availability viewConfig="NumNodes: 6, NumShards: 2"
+time="2023-03-23T23:29:33Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=availability
+time="2023-03-23T23:29:43Z" level=info msg="putting view to the nodes" group=xyan87 test=availability
+time="2023-03-23T23:29:43Z" level=info msg="put view successful" group=xyan87 test=availability
+time="2023-03-23T23:29:43Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="Partitioning the nodes" group=xyan87 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="putting independent key-value pairs (CM={}) to all partitions, minKeyIndex=1, maxKeyIndex=6, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="score +10 - put independent key-value pairs successful" group=xyan87 score=10 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=7, maxKeyIndex=12, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="score +10 - put dependent key-value pairs successful" group=xyan87 score=20 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="getting dependent key-value pairs (reusing CM) from all partitions and expecting latest value or stall-fail, minKeyIndex=7, maxKeyIndex=12, expectedValIndex=3" group=xyan87 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=availability
+time="2023-03-23T23:29:53Z" level=info msg="healing network partitions" group=xyan87 test=availability
+time="2023-03-23T23:29:54Z" level=info msg="sleeping for 11s (to let nodes become eventually consistent)" group=xyan87 test=availability
+time="2023-03-23T23:30:05Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=7, maxKeyIndex=12, expectedValIndex=3" group=xyan87 test=availability
+time="2023-03-23T23:30:05Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=40 test=availability
+time="2023-03-23T23:30:05Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=6, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=availability
+time="2023-03-23T23:30:05Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=50 test=availability
+time="2023-03-23T23:30:25Z" level=info msg="test completed." finalScore=50 group=xyan87 test=availability
+time="2023-03-23T23:30:25Z" level=info msg="finished test 3 with score 50/50" group=xyan87
+time="2023-03-23T23:30:25Z" level=info msg="starting test 4: availability test with 6 nodes and 3 shards (weight=4)" group=xyan87
+time="2023-03-23T23:30:25Z" level=info msg="starting test. Steps: 1. create a cluster (launch processes; wait 10s; PUT view); 2. get the view from all nodes and expect consistency; 3. partition the nodes so that each partition contains 1+ node from each shard; 4. do non-causally-dependent writes (all with CM={}) sprayed across all partitions (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all partitions (keys [N+1, 2N]); 6. do reads on writes of step 5 (from all partitions, all with reused CM (frm previous access or the end of step 5)) and expect latest values or stall-fails; 7. heal the network and wait for eventual consistency (10s); 8. do reads on writes of step 4 and 5 (from all nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 4-6 each have 10 points and step 8 has 20 points for a total of 50." group=xyan87 test=availability viewConfig="NumNodes: 6, NumShards: 3"
+time="2023-03-23T23:30:39Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=availability
+time="2023-03-23T23:30:49Z" level=info msg="putting view to the nodes" group=xyan87 test=availability
+time="2023-03-23T23:30:49Z" level=info msg="put view successful" group=xyan87 test=availability
+time="2023-03-23T23:30:49Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="Partitioning the nodes" group=xyan87 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="putting independent key-value pairs (CM={}) to all partitions, minKeyIndex=1, maxKeyIndex=6, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="score +10 - put independent key-value pairs successful" group=xyan87 score=10 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=7, maxKeyIndex=12, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="score +10 - put dependent key-value pairs successful" group=xyan87 score=20 test=availability
+time="2023-03-23T23:30:59Z" level=info msg="getting dependent key-value pairs (reusing CM) from all partitions and expecting latest value or stall-fail, minKeyIndex=7, maxKeyIndex=12, expectedValIndex=3" group=xyan87 test=availability
+time="2023-03-23T23:31:19Z" level=warning msg="failed to get dependent key-value pairs: failed to get key key-10 from node 10.1.220.21:8080 with CM from last access (expecting val in [val-10-3 ]), val=val-10-2 not in accepted vals" group=xyan87 test=availability
+time="2023-03-23T23:31:19Z" level=info msg="healing network partitions" group=xyan87 test=availability
+time="2023-03-23T23:31:19Z" level=info msg="sleeping for 11s (to let nodes become eventually consistent)" group=xyan87 test=availability
+time="2023-03-23T23:31:30Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=7, maxKeyIndex=12, expectedValIndex=3" group=xyan87 test=availability
+time="2023-03-23T23:31:30Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=availability
+time="2023-03-23T23:31:30Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=6, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=availability
+time="2023-03-23T23:31:30Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=40 test=availability
+time="2023-03-23T23:31:50Z" level=info msg="test completed." finalScore=40 group=xyan87 test=availability
+time="2023-03-23T23:31:50Z" level=info msg="finished test 4 with score 40/50" group=xyan87
+time="2023-03-23T23:31:50Z" level=warning msg="test 4 did not finish with full score (40/50) (test description: availability test with 6 nodes and 3 shards (weight=4))" group=xyan87
+time="2023-03-23T23:31:50Z" level=info msg="starting test 5: viewChange test (killNodes=false) (weight=3)" group=xyan87
+time="2023-03-23T23:31:50Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=false test=viewChange viewConfig1="NumNodes: 4, NumShards: 2" viewConfig2="NumNodes: 4, NumShards: 3"
+time="2023-03-23T23:32:04Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:32:14Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:32:14Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:32:14Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:32:24Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:32:24Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:32:24Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:32:24Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:32:24Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:32:24Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:32:24Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:32:35Z" level=info msg="putting view 2 to the nodes (NumNodes: 4, NumShards: 3)" group=xyan87 test=viewChange
+time="2023-03-23T23:32:35Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:32:35Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:32:45Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:32:45Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:32:45Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:32:45Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=viewChange
+time="2023-03-23T23:32:45Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:32:45Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=40 test=viewChange
+time="2023-03-23T23:33:05Z" level=info msg="test completed." finalScore=40 group=xyan87 test=viewChange
+time="2023-03-23T23:33:05Z" level=info msg="finished test 5 with score 40/40" group=xyan87
+time="2023-03-23T23:33:05Z" level=info msg="starting test 6: viewChange test (killNodes=false) (weight=3)" group=xyan87
+time="2023-03-23T23:33:05Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=false test=viewChange viewConfig1="NumNodes: 4, NumShards: 2" viewConfig2="NumNodes: 5, NumShards: 3"
+time="2023-03-23T23:33:17Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:33:27Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:33:27Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:33:27Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:33:37Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:33:37Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:33:37Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:33:37Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:33:37Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:33:37Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:33:37Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:33:48Z" level=info msg="putting view 2 to the nodes (NumNodes: 5, NumShards: 3)" group=xyan87 test=viewChange
+time="2023-03-23T23:33:48Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:33:48Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:33:58Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:33:58Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:33:58Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:33:58Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=viewChange
+time="2023-03-23T23:33:58Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:33:58Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=40 test=viewChange
+time="2023-03-23T23:34:18Z" level=info msg="test completed." finalScore=40 group=xyan87 test=viewChange
+time="2023-03-23T23:34:18Z" level=info msg="finished test 6 with score 40/40" group=xyan87
+time="2023-03-23T23:34:18Z" level=info msg="starting test 7: viewChange test (killNodes=false) (weight=3)" group=xyan87
+time="2023-03-23T23:34:18Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=false test=viewChange viewConfig1="NumNodes: 4, NumShards: 2" viewConfig2="NumNodes: 2, NumShards: 2"
+time="2023-03-23T23:34:30Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:34:40Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:34:40Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:34:40Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:34:50Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:34:50Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:34:50Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:34:50Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:34:50Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:34:51Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:34:51Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:35:02Z" level=info msg="putting view 2 to the nodes (NumNodes: 2, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:35:02Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:35:02Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:35:12Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:35:12Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:35:12Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:35:12Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=viewChange
+time="2023-03-23T23:35:12Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:35:12Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=40 test=viewChange
+time="2023-03-23T23:35:32Z" level=info msg="test completed." finalScore=40 group=xyan87 test=viewChange
+time="2023-03-23T23:35:32Z" level=info msg="finished test 7 with score 40/40" group=xyan87
+time="2023-03-23T23:35:32Z" level=info msg="starting test 8: viewChange test (killNodes=false) (weight=3)" group=xyan87
+time="2023-03-23T23:35:32Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=false test=viewChange viewConfig1="NumNodes: 4, NumShards: 3" viewConfig2="NumNodes: 2, NumShards: 1"
+time="2023-03-23T23:35:43Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:35:53Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 3)" group=xyan87 test=viewChange
+time="2023-03-23T23:35:53Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:35:53Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:36:03Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:36:03Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:36:03Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:36:03Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:36:03Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:36:04Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:36:04Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:36:15Z" level=info msg="putting view 2 to the nodes (NumNodes: 2, NumShards: 1)" group=xyan87 test=viewChange
+time="2023-03-23T23:36:15Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:36:15Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:36:25Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:36:25Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:36:25Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:36:25Z" level=warning msg="failed to get dependent key-value pairs: failed to get key key-7 from node 10.1.220.3:8080 with CM={} (expecting val in [val-7-3]), expected status code in [200] but got 404" group=xyan87 test=viewChange
+time="2023-03-23T23:36:25Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:36:25Z" level=warning msg="failed to get independent key-value pairs: failed to get key key-1 from node 10.1.220.3:8080 with CM={} (expecting val in [val-1-1 val-1-2 val-1-3]), expected status code in [200] but got 404" group=xyan87 test=viewChange
+time="2023-03-23T23:36:45Z" level=info msg="test completed." finalScore=20 group=xyan87 test=viewChange
+time="2023-03-23T23:36:45Z" level=info msg="finished test 8 with score 20/40" group=xyan87
+time="2023-03-23T23:36:45Z" level=warning msg="test 8 did not finish with full score (20/40) (test description: viewChange test (killNodes=false) (weight=3))" group=xyan87
+time="2023-03-23T23:36:45Z" level=info msg="starting test 9: viewChange test (killNodes=true) (weight=4)" group=xyan87
+time="2023-03-23T23:36:45Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=true test=viewChange viewConfig1="NumNodes: 4, NumShards: 2" viewConfig2="NumNodes: 4, NumShards: 3"
+time="2023-03-23T23:36:56Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:37:06Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:37:06Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:37:06Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:37:16Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:37:16Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:37:16Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:37:16Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:37:16Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:37:16Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:37:16Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:37:27Z" level=info msg="killing all but one node from each shard" group=xyan87 test=viewChange
+time="2023-03-23T23:37:28Z" level=info msg="putting view 2 to the nodes (NumNodes: 4, NumShards: 3)" group=xyan87 test=viewChange
+time="2023-03-23T23:37:28Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:37:28Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:37:38Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:37:38Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:37:38Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:37:38Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=viewChange
+time="2023-03-23T23:37:38Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:37:38Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=40 test=viewChange
+time="2023-03-23T23:37:58Z" level=info msg="test completed." finalScore=40 group=xyan87 test=viewChange
+time="2023-03-23T23:37:58Z" level=info msg="finished test 9 with score 40/40" group=xyan87
+time="2023-03-23T23:37:58Z" level=info msg="starting test 10: viewChange test (killNodes=true) (weight=4)" group=xyan87
+time="2023-03-23T23:37:58Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=true test=viewChange viewConfig1="NumNodes: 4, NumShards: 2" viewConfig2="NumNodes: 5, NumShards: 3"
+time="2023-03-23T23:38:09Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:38:19Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:38:19Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:38:19Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:38:29Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:38:29Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:38:29Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:38:29Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:38:29Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:38:29Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:38:29Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:38:40Z" level=info msg="killing all but one node from each shard" group=xyan87 test=viewChange
+time="2023-03-23T23:38:40Z" level=info msg="putting view 2 to the nodes (NumNodes: 5, NumShards: 3)" group=xyan87 test=viewChange
+time="2023-03-23T23:38:40Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:38:40Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:38:50Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:38:50Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:38:50Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:38:50Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=viewChange
+time="2023-03-23T23:38:50Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:38:50Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=40 test=viewChange
+time="2023-03-23T23:39:11Z" level=info msg="test completed." finalScore=40 group=xyan87 test=viewChange
+time="2023-03-23T23:39:11Z" level=info msg="finished test 10 with score 40/40" group=xyan87
+time="2023-03-23T23:39:11Z" level=info msg="starting test 11: viewChange test (killNodes=true) (weight=4)" group=xyan87
+time="2023-03-23T23:39:11Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=true test=viewChange viewConfig1="NumNodes: 4, NumShards: 2" viewConfig2="NumNodes: 2, NumShards: 2"
+time="2023-03-23T23:39:23Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:39:33Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:39:33Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:39:33Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:39:43Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:39:43Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:39:43Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:39:43Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:39:43Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:39:43Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:39:43Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:39:54Z" level=info msg="killing all but one node from each shard" group=xyan87 test=viewChange
+time="2023-03-23T23:39:54Z" level=info msg="putting view 2 to the nodes (NumNodes: 2, NumShards: 2)" group=xyan87 test=viewChange
+time="2023-03-23T23:39:54Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:39:54Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:40:04Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:40:04Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:40:04Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:40:04Z" level=info msg="score +10 - get dependent key-value pairs successful" group=xyan87 score=30 test=viewChange
+time="2023-03-23T23:40:04Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:40:04Z" level=info msg="score +10 - get independent key-value pairs successful" group=xyan87 score=40 test=viewChange
+time="2023-03-23T23:40:25Z" level=info msg="test completed." finalScore=40 group=xyan87 test=viewChange
+time="2023-03-23T23:40:25Z" level=info msg="finished test 11 with score 40/40" group=xyan87
+time="2023-03-23T23:40:25Z" level=info msg="starting test 12: viewChange test (killNodes=true) (weight=4)" group=xyan87
+time="2023-03-23T23:40:25Z" level=info msg="starting test. Steps: 1. create all needed nodes for the test some of which may be killed at step 6 (launch processes; wait 10s); 2. put viewConfig1; 3. get the view from all nodes and expect consistency; 4. do non-causally-dependent writes (all with CM={}) sprayed across all nodes (keys [1, N]); 5. do causally-dependent writes (use CM received after first req in second and so on) sprayed across all nodes (keys [N+1, 2N]); 6. if killNodes==true, wait for eventual consistency and then kill all but one node from each shard; 7. put viewConfig2 (possibly with new nodes if viewConfig2 has more nodes or some have been killed); 8. get the view from all nodes and expect consistency; 9. do reads on writes of step 4 and 5 (from all current nodes, all with CM={}) and expect consistent values from all nodes (tie-breaking) for keys [1, N] and latest values for keys [N+1, 2N]. Steps 7-8 each have 10 points and step 9 has 20 points for a total of 40." group=xyan87 killNodes=true test=viewChange viewConfig1="NumNodes: 4, NumShards: 3" viewConfig2="NumNodes: 2, NumShards: 1"
+time="2023-03-23T23:40:36Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=viewChange
+time="2023-03-23T23:40:46Z" level=info msg="putting view 1 to the nodes (NumNodes: 4, NumShards: 3)" group=xyan87 test=viewChange
+time="2023-03-23T23:40:46Z" level=info msg="put view 1 successful" group=xyan87 test=viewChange
+time="2023-03-23T23:40:46Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:40:56Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:40:56Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=viewChange
+time="2023-03-23T23:40:56Z" level=info msg="putting independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:40:56Z" level=info msg="put independent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:40:56Z" level=info msg="putting dependent key-value pairs (reusing CM) to all partitions, minKeyIndex=5, maxKeyIndex=8, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:40:56Z" level=info msg="put dependent key-value pairs successful" group=xyan87 test=viewChange
+time="2023-03-23T23:40:56Z" level=info msg="sleeping for 11s" group=xyan87 test=viewChange
+time="2023-03-23T23:41:07Z" level=info msg="killing all but one node from each shard" group=xyan87 test=viewChange
+time="2023-03-23T23:41:07Z" level=info msg="putting view 2 to the nodes (NumNodes: 2, NumShards: 1)" group=xyan87 test=viewChange
+time="2023-03-23T23:41:07Z" level=info msg="score +10 - put view 2 successful" group=xyan87 score=10 test=viewChange
+time="2023-03-23T23:41:07Z" level=info msg="sleeping for 10s (to let nodes set up the view)" group=xyan87 test=viewChange
+time="2023-03-23T23:41:17Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=viewChange
+time="2023-03-23T23:41:17Z" level=info msg="score +10 - get view from all nodes successful and all views consistent" group=xyan87 score=20 test=viewChange
+time="2023-03-23T23:41:17Z" level=info msg="getting dependent key-value pairs (with CM={}) from all nodes and expecting latest value, minKeyIndex=5, maxKeyIndex=8, expectedValIndex=3" group=xyan87 test=viewChange
+time="2023-03-23T23:41:17Z" level=warning msg="failed to get dependent key-value pairs: failed to get key key-7 from node 10.1.220.37:8080 with CM={} (expecting val in [val-7-3]), expected status code in [200] but got 404" group=xyan87 test=viewChange
+time="2023-03-23T23:41:17Z" level=info msg="getting independent key-value pairs (with CM={}) from all nodes and expecting consistent values, minKeyIndex=1, maxKeyIndex=4, minValIndexPerKey=1, maxValIndexPerKey=3" group=xyan87 test=viewChange
+time="2023-03-23T23:41:17Z" level=warning msg="failed to get independent key-value pairs: failed to get key key-1 from node 10.1.220.37:8080 with CM={} (expecting val in [val-1-1 val-1-2 val-1-3]), expected status code in [200] but got 404" group=xyan87 test=viewChange
+time="2023-03-23T23:41:37Z" level=info msg="test completed." finalScore=20 group=xyan87 test=viewChange
+time="2023-03-23T23:41:37Z" level=info msg="finished test 12 with score 20/40" group=xyan87
+time="2023-03-23T23:41:37Z" level=warning msg="test 12 did not finish with full score (20/40) (test description: viewChange test (killNodes=true) (weight=4))" group=xyan87
+time="2023-03-23T23:41:37Z" level=info msg="starting test 13: keyDistribution test with n1=6, n2=7 (weight=5, extraCredit=2)" group=xyan87
+time="2023-03-23T23:41:37Z" level=info msg="starting test. Steps: 1. create all needed nodes; 2. put viewConfig1; 3. get view from all nodes and expect consistency; 4. do numKeys causally independent writes sprayed across all nodes; 5. sleep for 11 seconds; 6. expect number of keys in each shard to be within thresholdPercent% of numKeys/s1; 7. put viewConfig2; 8. get view from all nodes and expect consistency; 9. expect number of keys in each shard to be within thresholdPercent% of numKeys/s2; 10. expect number of keys moved to be within thresholdPercent% of numKeys/s2. Steps 4, 6, 9 each have 10 points and step 10 has 20 for a total of 50 (step 10 is extra credit)." group=xyan87 numKeys=2000 test=keyDistribution thresholdPercent=25 viewConfig1="NumNodes: 6, NumShards: 6" viewConfig2="NumNodes: 7, NumShards: 7"
+time="2023-03-23T23:41:48Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=keyDistribution
+time="2023-03-23T23:41:58Z" level=info msg="putting view 1 to the nodes (NumNodes: 6, NumShards: 6)" group=xyan87 test=keyDistribution
+time="2023-03-23T23:41:58Z" level=info msg="put view 1 successful" group=xyan87 test=keyDistribution
+time="2023-03-23T23:41:58Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=keyDistribution
+time="2023-03-23T23:41:58Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=keyDistribution
+time="2023-03-23T23:41:58Z" level=info msg="putting 2000 independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=2000, valIndex=1" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:03Z" level=info msg="score +10 - put 2000 independent key-value pairs successful" group=xyan87 score=10 test=keyDistribution
+time="2023-03-23T23:42:03Z" level=info msg="sleeping for 11s" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="getting key lists from all nodes" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="checking key distribution among shards" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="score +10 - key distribution (with <=25% deviation from optimal) successful" group=xyan87 score=20 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="putting view 2 to the nodes (NumNodes: 7, NumShards: 7)" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="put view 2 successful" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="getting key lists from all nodes" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="checking key distribution among shards" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="score +10 - key distribution (with <=25% deviation from optimal) successful" group=xyan87 score=30 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=info msg="checking key movement during reshard" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:14Z" level=warning msg="key movement more than 125% of optimal movement; moved=1692, optimal=285" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:34Z" level=info msg="test completed." finalScore=30 group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:34Z" level=info msg="finished test 13 with score 30/50" group=xyan87
+time="2023-03-23T23:42:34Z" level=warning msg="test 13 did not finish with full score (30/50) (test description: keyDistribution test with n1=6, n2=7 (weight=5, extraCredit=2))" group=xyan87
+time="2023-03-23T23:42:34Z" level=info msg="starting test 14: keyDistribution test with n1=7, n2=8 (weight=5, extraCredit=2)" group=xyan87
+time="2023-03-23T23:42:34Z" level=info msg="starting test. Steps: 1. create all needed nodes; 2. put viewConfig1; 3. get view from all nodes and expect consistency; 4. do numKeys causally independent writes sprayed across all nodes; 5. sleep for 11 seconds; 6. expect number of keys in each shard to be within thresholdPercent% of numKeys/s1; 7. put viewConfig2; 8. get view from all nodes and expect consistency; 9. expect number of keys in each shard to be within thresholdPercent% of numKeys/s2; 10. expect number of keys moved to be within thresholdPercent% of numKeys/s2. Steps 4, 6, 9 each have 10 points and step 10 has 20 for a total of 50 (step 10 is extra credit)." group=xyan87 numKeys=2000 test=keyDistribution thresholdPercent=25 viewConfig1="NumNodes: 7, NumShards: 7" viewConfig2="NumNodes: 8, NumShards: 8"
+time="2023-03-23T23:42:49Z" level=info msg="nodes created, sleeping for 10s (to let nodes start up)" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:59Z" level=info msg="putting view 1 to the nodes (NumNodes: 7, NumShards: 7)" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:59Z" level=info msg="put view 1 successful" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:59Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:59Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=keyDistribution
+time="2023-03-23T23:42:59Z" level=info msg="putting 2000 independent key-value pairs (CM={}) to all nodes, minKeyIndex=1, maxKeyIndex=2000, valIndex=1" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:04Z" level=info msg="score +10 - put 2000 independent key-value pairs successful" group=xyan87 score=10 test=keyDistribution
+time="2023-03-23T23:43:04Z" level=info msg="sleeping for 11s" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:15Z" level=info msg="getting key lists from all nodes" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:15Z" level=info msg="checking key distribution among shards" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:15Z" level=info msg="score +10 - key distribution (with <=25% deviation from optimal) successful" group=xyan87 score=20 test=keyDistribution
+time="2023-03-23T23:43:15Z" level=info msg="putting view 2 to the nodes (NumNodes: 8, NumShards: 8)" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=info msg="put view 2 successful" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=info msg="getting views from nodes and checking consistency" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=info msg="get view from all nodes successful and all views consistent" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=info msg="getting key lists from all nodes" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=info msg="checking key distribution among shards" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=info msg="score +10 - key distribution (with <=25% deviation from optimal) successful" group=xyan87 score=30 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=info msg="checking key movement during reshard" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:16Z" level=warning msg="key movement more than 125% of optimal movement; moved=1738, optimal=250" group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:36Z" level=info msg="test completed." finalScore=30 group=xyan87 test=keyDistribution
+time="2023-03-23T23:43:36Z" level=info msg="finished test 14 with score 30/50" group=xyan87
+time="2023-03-23T23:43:36Z" level=warning msg="test 14 did not finish with full score (30/50) (test description: keyDistribution test with n1=7, n2=8 (weight=5, extraCredit=2))" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="all tests done, printing scores again" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 1: score=70/70, weight=2" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 2: score=70/70, weight=2" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 3: score=50/50, weight=4" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 4: score=40/50, weight=4" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 5: score=40/40, weight=3" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 6: score=40/40, weight=3" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 7: score=40/40, weight=3" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 8: score=20/40, weight=3" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 9: score=40/40, weight=4" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 10: score=40/40, weight=4" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 11: score=40/40, weight=4" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 12: score=20/40, weight=4" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 13: score=30/50, weight=5" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="test 14: score=30/50, weight=5" group=xyan87
+time="2023-03-23T23:43:36Z" level=info msg="Final score overall: 9.1/10" group=xyan87
