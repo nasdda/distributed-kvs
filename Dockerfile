@@ -14,4 +14,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 ENTRYPOINT ["python3"]
-CMD ["-u", "assignment4.py"]
+CMD ["-u", "distributed_kvs.py"]

@@ -17,7 +17,6 @@ def init():
     global cm  # Causal metadata to be passed
     cm = {}
 
-    # Assignment 4
     global nodes  # All nodes in cluster
     nodes = []
     global shards  # Shards mapped to their nodes
